@@ -4,14 +4,24 @@ const db = require('./db');
 const mqttClient = mqtt.connect(config.mqtt.broker);
 
 mqttClient.on('connect', () => {
-  console.log('Connected to MQTT broker');
-  mqttClient.subscribe(config.mqtt.topic);
+  console.log('Terhubung dengan MQTT Broker');
+  config.mqtt.topic.forEach((topic) => {
+    client.subscribe(topic, (err) => {
+      if (!err) {
+        console.log(`Subscribed to ${topic}`);
+      } else {
+        console.error(`Failed to subscribe to ${topic}: ${err}`);
+      }
+    });
+  });
 });
 
 mqttClient.on('message', (topic, message) => {
   console.log(`Received message on topic ${topic}: ${message}`);
   var pesan = JSON.parse(message);
-  // db.tinsert('dat_sensor',pesan.msg);
+  console.log(pesan);
+  db.tinsert('dat_sensor',pesan.msg);
+  db.tinsert('log_transaksi',message);
 });
 
 module.exports = mqttClient;

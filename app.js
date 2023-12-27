@@ -15,11 +15,14 @@ app.use((req, res, next) => {
 });
 
 app.use('/api', router);
+app.use('/print', printer)
 
 process.on('SIGINT', async () => {
   try {
     await db.close();
+    mqttClient.end();
     console.log('Database terputus');
+    console.log('MQTT terputus');
   } catch (e) {
     console.log('Error Close Database : ', e);
   } finally {
