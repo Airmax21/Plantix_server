@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./db');
 const mqttClient = require('./mqttHandler');
 const router = require('./router');
+const printer = require('./printer');
 
 const app = express();
 const port = 3000;
