@@ -6,7 +6,7 @@ const mqttClient = mqtt.connect(config.mqtt.broker);
 mqttClient.on('connect', () => {
   console.log('Terhubung dengan MQTT Broker');
   config.mqtt.topic.forEach((topic) => {
-    client.subscribe(topic, (err) => {
+    mqttClient.subscribe(topic, (err) => {
       if (!err) {
         console.log(`Subscribed to ${topic}`);
       } else {
