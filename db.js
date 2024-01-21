@@ -30,7 +30,8 @@ function close() {
 }
 
 function tinsert(table, data) {
-    data.created_at = waktu;
+    data['created_at'] = waktu;
+    data['is_deleted'] = 0;
     var columns = Object.keys(data).join(', ');
     var values = Object.values(data);
     var placeholders = new Array(values.length).fill('?').join(', ');
@@ -39,7 +40,7 @@ function tinsert(table, data) {
 }
 
 function tupdate(table, data, where) {
-    data.updated_at = waktu;
+    data['updated_at'] = waktu;
     var set = Object.keys(data).map((key) => `${key} = ?`).join(', ');
     var values = [...Object.values(data), ...Object.values(where)];
     var sql = `UPDATE ${table} SET ${set} WHERE ?`;

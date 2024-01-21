@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('./db');
-const config = require('./config');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -40,15 +39,39 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.get('/pompa', async (req, res) => {
+    try {
+        var result = await db.query('SELECT * FROM dat_pompa WHERE is_deleted = 0 ORDER BY tgl_terima DESC LIMIT 1');
+        res.json(result);
+    }
+    catch (e) {
+        console.log('Error: ', e)
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/pompa', (req, res) => {
+    const data = req.body;
+    try {
+        req.mqttClient.publish('/plantix/pompa', data.pompa);
+        res.json('berhasil');
+    }
+    catch(e){
+        console.log('Error: ',e);
+        res.status(500).json({error: 'Internal Server Error'})
+    }
+})
+
 router.get('/publish/:topic/:message', (req, res) => {
     const { topic, message } = req.params;
-    req.mqttClient.publish(topic, message);
+    req.mqttClient.publish('/plantix/' + topic, message);
     res.send(`Published to topic ${topic}: ${message}`);
 });
 
-router.post('/publish', (req, res) => {
+router.post('/publish/:topic', (req, res) => {
+    const { topic } = req.params;
     const data = req.body;
-    req.mqttClient.publish('tes', JSON.stringify(data));
+    req.mqttClient.publish('/plantix/' + topic, JSON.stringify(data));
     console.log('Data yang diterima:', data);
     res.status(200).json({ message: 'Data berhasil diterima!' });
 });
